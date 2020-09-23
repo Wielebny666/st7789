@@ -104,7 +104,7 @@ lcd_init_cmd_t st7789_init_cmds[] = {
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
-ili9341_handle_t ili9341_create(const ili9341_cfg_t *spi_cfg)
+st7789_handle_t st7789_create(const st7789_cfg_t *spi_cfg)
 {
 	ESP_LOGD(TAG, "%s", __FUNCTION__);
 
@@ -116,7 +116,7 @@ ili9341_handle_t ili9341_create(const ili9341_cfg_t *spi_cfg)
 		ESP_LOGE(TAG, "Create semaphore fail");
 		return NULL;
 	}
-	vQueueAddToRegistry(st7789_trans_in_progress, "ili9341_trans_semaphore");
+	vQueueAddToRegistry(st7789_trans_in_progress, "st7789_trans_semaphore");
 	xSemaphoreGive(st7789_trans_in_progress);
 
 	st7789_dev_t *st7789_dev = (st7789_dev_t*) calloc(1, sizeof(st7789_dev_t));
@@ -157,7 +157,7 @@ ili9341_handle_t ili9341_create(const ili9341_cfg_t *spi_cfg)
 	{
 		//Initialize the SPI bus
 		ESP_LOGD(TAG, "Initialization SPI%d", spi_cfg->spi_host + 1);
-		error = spi_bus_initialize(spi_cfg->spi_host, &buscfg, DMA_CHAN);
+		error = spi_bus_initialize(spi_cfg->spi_host, &buscfg, CONFIG_ST7789_DMA_CHANNEL);
 		CHECK((error == ESP_OK), NULL, "SPI device %d initialize fail", spi_cfg->spi_host);
 	}
 
@@ -170,7 +170,7 @@ ili9341_handle_t ili9341_create(const ili9341_cfg_t *spi_cfg)
 
 	lcd_init_cmd_t *lcd_init_cmds = NULL;
 	lcd_init_cmds = st7789_init_cmds;
-	ASSERT(lcd_init_cmds != NULL);
+	CHECK((lcd_init_cmds != NULL), NULL, "LCD init failed");
 	ESP_LOGI(TAG, "Initialization sequence.");
 
 	// Send all the commands
@@ -209,7 +209,7 @@ void st7789_send_cmd(uint8_t cmd)
 {
 	ESP_LOGD(TAG, "%s", __FUNCTION__);
 
-	xSemaphoreTake(ili_trans_in_progress, portMAX_DELAY);
+	xSemaphoreTake(st7789_trans_in_progress, portMAX_DELAY);
 
 	spi_transaction_t t =
 		{

@@ -49,12 +49,12 @@ menu "ST7789 Driver Configuration"
 
         config ST7789_RST_GPIO
             int "ST7789 RST GPIO"
-            range 0 39
+            range -1 39
             default -1
 
         config ST7789_BCKL_GPIO
             int "ST7789 BCKL GPIO"
-            range 0 39
+            range -1 39
             default -1
                                     
          config ST7789_DMA_CHANNEL
@@ -77,18 +77,18 @@ menu "ST7789 Driver Configuration"
 	            "LittlevGL Screen Height (pixels)"
 	            
 	    config LV_ENABLE_BACKLIGHT_CONTROL
-            bool "Enable control of the display backlight by using an GPIO." if 
+            bool "Enable control of the display backlight by using an GPIO." 
             default y
             help
-                Enable controlling the display backlight using an GPIO
+                "Enable controlling the display backlight using an GPIO"
                 
 		config LV_BACKLIGHT_ACTIVE_LVL
             bool "Is backlight turn on with a HIGH (1) logic level?"
-            depends on LV_ENABLE_BACKLIGHT_CONTROL
+
             default y
             help
-                Some backlights are turned on with a high signal, others held low.
-                If enabled, a value of 1 will be sent to the display to enable the backlight,
-                otherwise a 0 will be expected to enable it.                
+                "Some backlights are turned on with a high signal, others held low. \
+                If enabled, a value of 1 will be sent to the display to enable the backlight, \
+                otherwise a 0 will be expected to enable it. "               
 	endmenu
 endmenu

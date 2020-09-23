@@ -57,6 +57,11 @@ typedef void (*st7789_ready_cb_t)(void);
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
+st7789_handle_t st7789_create(const st7789_cfg_t *spi_cfg);
+void st7789_send_cmd(uint8_t cmd);
+void st7789_send_data(void  *data, uint16_t length);
+void st7789_send_color(void  * data, uint16_t length);
+void st7789_ready_register_event_cb(st7789_ready_cb_t cb);
 
 /**********************
  *      MACROS
