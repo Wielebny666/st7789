@@ -1,0 +1,94 @@
+menu "ST7789 Driver Configuration"
+	menu "ST7789 Screen Pin Configuration"
+        choice ST7789_SPI_SELECT
+            prompt "Select SPI Port"
+            default ST7789_HSPI
+        
+            config ST7789_HSPI
+                bool "Select HSPI"
+
+            config ST7789_VSPI
+                bool "Select VSPI"
+
+        endchoice
+
+        config ST7789_SPI_NUM
+            int
+            default 1 if ST7789_HSPI
+            default 2 if ST7789_VSPI
+            
+        config ST7789_SPI_CLOCK
+            int "ST7789 SPI Clock"
+            range 0 40000000
+            default 10000000
+
+        config ST7789_MISO_GPIO
+            int "ST7789 MISO GPIO"
+            range 0 39
+            default 12
+            
+		config ST7789_MOSI_GPIO
+            int "ST7789 MOSI GPIO"
+            range 0 39
+            default 13
+
+        config ST7789_CLK_GPIO
+            int "ST7789 CLK GPIO"
+            range 0 39
+            default 14
+
+        config ST7789_CS_GPIO
+            int "ST7789 CS GPIO"
+            range 0 39
+            default 15
+
+        config ST7789_DC_GPIO
+            int "ST7789 DC GPIO"
+            range 0 39
+            default 2
+
+        config ST7789_RST_GPIO
+            int "ST7789 RST GPIO"
+            range 0 39
+            default -1
+
+        config ST7789_BCKL_GPIO
+            int "ST7789 BCKL GPIO"
+            range 0 39
+            default -1
+                                    
+         config ST7789_DMA_CHANNEL
+            int "ST7789 DMA CHANENL"
+            range 0 2
+            default 2
+	        
+	    config ST7789_LVGL_DRIVER_SCREEN_WIDTH
+	        int "LittlevGL Screen Width (pixels)"
+	        range 0 1080
+	        default 320
+	        help
+	            "LittlevGL Screen Width (pixels)"
+	
+	    config ST7789_LVGL_DRIVER_SCREEN_HEIGHT
+	        int "LittlevGL Screen Height (pixels)"
+	        range 0 960
+	        default 240
+	        help
+	            "LittlevGL Screen Height (pixels)"
+	            
+	    config LV_ENABLE_BACKLIGHT_CONTROL
+            bool "Enable control of the display backlight by using an GPIO." if 
+            default y
+            help
+                Enable controlling the display backlight using an GPIO
+                
+		config LV_BACKLIGHT_ACTIVE_LVL
+            bool "Is backlight turn on with a HIGH (1) logic level?"
+            depends on LV_ENABLE_BACKLIGHT_CONTROL
+            default y
+            help
+                Some backlights are turned on with a high signal, others held low.
+                If enabled, a value of 1 will be sent to the display to enable the backlight,
+                otherwise a 0 will be expected to enable it.                
+	endmenu
+endmenu

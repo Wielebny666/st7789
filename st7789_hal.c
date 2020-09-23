@@ -123,8 +123,8 @@ ili9341_handle_t ili9341_create(const ili9341_cfg_t *spi_cfg)
 	CHECK((st7789_dev != NULL), NULL, "ST7789 ALLOC FAIL");
 
 	//Initialize non-SPI GPIOs
-	gpio_pad_select_gpio(LCD_DC);
-	gpio_set_direction(LCD_DC, GPIO_MODE_OUTPUT);
+	gpio_pad_select_gpio(ST7789_DC);
+	gpio_set_direction(ST7789_DC, GPIO_MODE_OUTPUT);
 
 	spi_bus_config_t buscfg =
 		{
@@ -164,8 +164,8 @@ ili9341_handle_t ili9341_create(const ili9341_cfg_t *spi_cfg)
 	error = spi_bus_add_device(spi_cfg->spi_host, &devcfg, &st7789_spi_handle);
 	CHECK((error == ESP_OK), NULL, "SPI device %d add fail", spi_cfg->spi_host);
 
-	ili9341_dev->spi_config = *spi_cfg;
-	ili9341_dev->spi_handle = st7789_spi_handle;
+	st7789_dev->spi_config = *spi_cfg;
+	st7789_dev->spi_handle = st7789_spi_handle;
 	spi_handle[spi_cfg->spi_host] = st7789_spi_handle;
 
 	lcd_init_cmd_t *lcd_init_cmds = NULL;
@@ -280,7 +280,7 @@ void st7789_ready_register_event_cb(st7789_ready_cb_t cb)
 static void IRAM_ATTR spi_pre_transfer_callback(spi_transaction_t *t)
 {
 	int dc = (int) t->user;
-	gpio_set_level(LCD_DC, dc);
+	gpio_set_level(ST7789_DC, dc);
 }
 
 static void IRAM_ATTR spi_ready(spi_transaction_t *trans)
