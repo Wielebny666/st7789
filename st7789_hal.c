@@ -123,8 +123,8 @@ st7789_handle_t st7789_create(const st7789_cfg_t *spi_cfg)
 	CHECK((st7789_dev != NULL), NULL, "ST7789 ALLOC FAIL");
 
 	//Initialize non-SPI GPIOs
-	gpio_pad_select_gpio(ST7789_DC);
-	gpio_set_direction(ST7789_DC, GPIO_MODE_OUTPUT);
+	gpio_pad_select_gpio(spi_cfg->dc);
+	gpio_set_direction(spi_cfg->dc, GPIO_MODE_OUTPUT);
 
 	spi_bus_config_t buscfg =
 		{
@@ -138,7 +138,7 @@ st7789_handle_t st7789_create(const st7789_cfg_t *spi_cfg)
 
 	spi_device_interface_config_t devcfg =
 		{
-			.clock_speed_hz = spi_cfg->spi_clock_speed_hz, // Clock out frequency
+			.clock_speed_hz = spi_cfg->spi_clock_speed_hz / 5, // Clock out frequency
 			.mode = 0,                 			  	// SPI mode 0
 			.spics_io_num = spi_cfg->cs,            		// CS pin
 			.queue_size = 5, // We want to be able to queue 7 transactions at a time
@@ -157,7 +157,7 @@ st7789_handle_t st7789_create(const st7789_cfg_t *spi_cfg)
 	{
 		//Initialize the SPI bus
 		ESP_LOGD(TAG, "Initialization SPI%d", spi_cfg->spi_host + 1);
-		error = spi_bus_initialize(spi_cfg->spi_host, &buscfg, CONFIG_ST7789_DMA_CHANNEL);
+		error = spi_bus_initialize(spi_cfg->spi_host, &buscfg, spi_cfg->dma_channel);
 		CHECK((error == ESP_OK), NULL, "SPI device %d initialize fail", spi_cfg->spi_host);
 	}
 
