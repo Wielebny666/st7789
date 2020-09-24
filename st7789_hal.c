@@ -181,7 +181,7 @@ st7789_handle_t st7789_create(const st7789_cfg_t *spi_cfg)
 		st7789_send_data(lcd_init_cmds[cmd].data, lcd_init_cmds[cmd].databytes & 0x1F);
 		if (lcd_init_cmds[cmd].databytes & 0x80)
 		{
-			vTaskDelay(pdMS_TO_TICKS(120));
+			vTaskDelay(pdMS_TO_TICKS(100));
 		}
 		cmd++;
 	}
@@ -215,7 +215,7 @@ void st7789_send_cmd(uint8_t cmd)
 		{
 			.length = 8, 			// Len is in bytes, transaction length is in bits
 			.tx_buffer = &cmd,      // Data
-			.user = (void*) 0, 		// D/C needs to be set to 1
+			.user = (void*) 0, 		// D/C needs to be set to 0
 		};
 	spi_color_sent = false; //Mark the "lv_flush_ready" NOT needs to be called in "spi_ready"
 	ESP_ERROR_CHECK(spi_device_queue_trans(st7789_spi_handle, &t, portMAX_DELAY));
@@ -279,12 +279,14 @@ void st7789_ready_register_event_cb(st7789_ready_cb_t cb)
  It will set the D/C line to the value indicated in the user field */
 static void IRAM_ATTR spi_pre_transfer_callback(spi_transaction_t *t)
 {
+	ESP_EARLY_LOGD(TAG, "%s", __FUNCTION__);
 	int dc = (int) t->user;
 	gpio_set_level(ST7789_DC, dc);
 }
 
 static void IRAM_ATTR spi_ready(spi_transaction_t *trans)
 {
+	ESP_EARLY_LOGD(TAG, "%s", __FUNCTION__);
 	portBASE_TYPE pxHigherPriorityTaskWoken = pdFALSE;
 
 	xSemaphoreGiveFromISR(st7789_trans_in_progress, &pxHigherPriorityTaskWoken);
